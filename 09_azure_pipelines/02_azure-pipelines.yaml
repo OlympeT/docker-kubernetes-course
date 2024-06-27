@@ -326,7 +326,7 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az aks get-credentials --resource-group dakar-dev-1280-RG --name dakar-dev-1280-RG
+          az aks get-credentials --resource-group dakar-dev-1280-RG --name aks-cluster-dev
           kubectl cluster-info
 
           # Deploy job.yaml to scan Kubernetes config and job-aks.yaml to scan specific AKS config
