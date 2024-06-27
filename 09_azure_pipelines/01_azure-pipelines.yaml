@@ -45,7 +45,7 @@ steps:
   inputs:
     connectionType: 'Azure Resource Manager'
     azureSubscriptionEndpoint: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
-    azureResourceGroup: 'rg-aks'
+    azureResourceGroup: 'dakar-dev-1280-RG'
     kubernetesCluster: 'aks-cluster-dev'
     namespace: 'default'
     command: 'apply'
