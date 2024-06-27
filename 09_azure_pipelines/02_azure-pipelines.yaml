@@ -110,25 +110,25 @@ stages:
     - task: AzureCLI@2
       displayName: Push Container to ACR
       inputs:
-        azureSubscription: 'aks-spn-ca'
+        azureSubscription: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az acr login -n acrforakscluster
+          az acr login -n acr4aks13579
 
-          docker push acrforakscluster.azurecr.io/webapp:$(tag)
+          docker push acr4aks13579.azurecr.io/webapp:$(tag)
 
     - task: AzureCLI@2
       displayName: '[Optional] Build Container inside ACR'
       enabled: ${{ parameters.runCompletePipeline}}
       inputs:
-        azureSubscription: 'aks-spn-ca'
+        azureSubscription: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az acr login -n acrforakscluster
+          az acr login -n aks-cluster-dev
 
-          az acr build -r acrforakscluster -t webapp:$(tag) app-dotnet
+          az acr build -r aks-cluster-dev -t webapp:$(tag) app-dotnet
 
     - task: qetza.replacetokens.replacetokens-task.replacetokens@4
       displayName: Replace TAG in YAML Deployment
@@ -187,9 +187,9 @@ stages:
       displayName: Deploy YAML Manifest
       inputs:
         connectionType: 'Azure Resource Manager'
-        azureSubscriptionEndpoint: 'aks-spn-ca'
-        azureResourceGroup: 'rg-aks-cluster'
-        kubernetesCluster: 'aks-cluster'
+        azureSubscriptionEndpoint: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
+        azureResourceGroup: 'dakar-dev-1280-RG'
+        kubernetesCluster: 'aks-cluster-dev'
         namespace: 'default'
         command: 'apply'
         useConfigurationFile: true
@@ -294,16 +294,16 @@ stages:
     - task: AzureCLI@2
       displayName: 'Deploy Helm Chart'
       inputs:
-        azureSubscription: 'aks-spn-ca'
+        azureSubscription: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
-        workingDirectory: '$(System.ArtifactsDirectory)/drop/helm_chart'
         inlineScript: |
-          az aks get-credentials --resource-group rg-aks-cluster --name aks-cluster
-
+          az aks get-credentials --resource-group aks-cluster-dev --name aks-cluster-dev
+          
           kubectl cluster-info
-
+          
           helm upgrade -f values.yaml --set image.tag="1.20.0" --set service.type=LoadBalancer my-app . --install --namespace prod --create-namespace
+        workingDirectory: '$(System.ArtifactsDirectory)/drop/helm_chart'
 
   - job: Test
     displayName: 'Integration Tests PROD'
@@ -322,11 +322,11 @@ stages:
       displayName: 'Scan Cluster Config'
       # enabled: ${{ parameters.runCompletePipeline}}
       inputs:
-        azureSubscription: 'aks-spn-ca'
+        azureSubscription: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az aks get-credentials --resource-group rg-aks-cluster --name aks-cluster
+          az aks get-credentials --resource-group aks-cluster-dev --name aks-cluster-dev
           kubectl cluster-info
 
           # Deploy job.yaml to scan Kubernetes config and job-aks.yaml to scan specific AKS config
