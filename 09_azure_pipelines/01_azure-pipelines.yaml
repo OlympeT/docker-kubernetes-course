@@ -13,7 +13,7 @@ steps:
 - task: AzureCLI@2
   displayName: Docker Build & Push
   inputs:
-    azureSubscription: 'Microsoft-Azure-NonProd'
+    azureSubscription: 'Azure subscription 1(b19338e5-368e-4f1d-b894-d5bdfe7a3cf1)'
     scriptType: 'bash'
     scriptLocation: 'inlineScript'
     inlineScript: |
@@ -21,8 +21,7 @@ steps:
       az acr login -n $(acr_name)
       docker push $(acr_name).azurecr.io/webapp:$(tag)
       
-- task: qetza.replacetokens.replacetokens-task.replacetokens@3
-  displayName: 'Replace Image TAG'
+- task: replacetokens@3
   inputs:
     rootDirectory: '02_kubernetes_aks'
     targetFiles: 'app-deploy.yaml'
@@ -30,10 +29,12 @@ steps:
     writeBOM: true
     actionOnMissing: 'warn'
     keepToken: false
+    actionOnNoFiles: 'continue'
+    enableTransforms: false
     tokenPrefix: '__'
     tokenSuffix: '__'
+    enableRecursion: false
     useLegacyPattern: false
-    enableTransforms: false
     enableTelemetry: true
 
 - script: cat 02_kubernetes_aks/app-deploy.yaml
