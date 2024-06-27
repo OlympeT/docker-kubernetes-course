@@ -298,7 +298,7 @@ stages:
         scriptType: 'bash'
         scriptLocation: 'inlineScript'
         inlineScript: |
-          az aks get-credentials --resource-group aks-cluster-dev --name aks-cluster-dev
+          az aks get-credentials --resource-group dakar-dev-1280-RG --name aks-cluster-dev
           
           kubectl cluster-info
           
